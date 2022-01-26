@@ -1,34 +1,11 @@
 import { Box, Button, Text, TextField, Image } from '@skynexui/components'; 
+import { useState } from 'react';
+import { useRouter } from 'next/router'
+
 import appConfig from "../config.json";
 
-function GlobalStyle() {
-  return (
-    <style global jsx>{`
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        list-style: none;
-      }
-      body {
-        font-family: 'Open Sans', sans-serif;
-      }
-      /* App fit Height */ 
-      html, body, #__next {
-        min-height: 100vh;
-        display: flex;
-        flex: 1;
-      }
-      #__next {
-        flex: 1;
-      }
-      #__next > * {
-        flex: 1;
-      }
-      /* ./App fit Height */ 
-    `}</style>
-  );
-}
+
+
 
 function Title(props) {
   const Tag = props.tag || 'h1';
@@ -47,25 +24,26 @@ function Title(props) {
   );
 }
 
-// // function HomePage() {
-// //   return (
-// //     <div>
-// //       <GlobalStyle />
-// //       <Title tag="h2">Boas vindas a mais uma imersaoDev</Title>
-// //       <h2>Discord - Alura Matrix</h2>
-// //     </div>
-
-// //   )
-// // }
-
-// // export default HomePage
 
 export default function PaginaInicial() {
-  const username = 'JeshuaBen';
+  
+  const [username, setUsername] = useState('')
+  const routes = useRouter()
+  
+
+  function onHandleSubmitForm (event) {
+    if (username.length === 0) {
+      alert('Preencha o campo do usuário')
+    }else  {
+      event.preventDefault()
+      routes.push('/chat')
+    }  
+  }
+
+  
 
   return (
     <>
-      <GlobalStyle />
       <Box
         styleSheet={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -83,7 +61,7 @@ export default function PaginaInicial() {
               xs: 'column',
               sm: 'row',
             },
-            width: '100%', maxWidth: '700px',
+            width: '100%', maxWidth: '600px',
             borderRadius: '5px', padding: '32px', margin: '16px',
             boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
             backgroundColor: appConfig.theme.colors.neutrals[700],
@@ -92,7 +70,9 @@ export default function PaginaInicial() {
           {/* Formulário */}
           <Box
             as="form"
-            styleSheet={{
+              required
+              onSubmit={onHandleSubmitForm}
+              styleSheet={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
               width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '32px',
             }}
@@ -102,8 +82,12 @@ export default function PaginaInicial() {
               {appConfig.name}
               
             </Text>
+            
 
             <TextField
+              value={username}
+              onChange={(event) => setUsername(event.target.value) }
+              // (event) => setUsername(event.target.value) método pra setar valores de um input pra um estado.
               fullWidth
               textFieldColors={{
                 neutral: {
