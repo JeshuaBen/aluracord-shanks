@@ -16,6 +16,9 @@ function GlobalStyle() {
         display: flex;
         flex: 1;
       }
+      ::-webkit-scrollbar {
+        display:none;
+      }
       #__next {
         flex: 1;
       }
