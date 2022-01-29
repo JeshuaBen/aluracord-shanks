@@ -1,33 +1,66 @@
 import { Box, Text, TextField, Image, Button } from "@skynexui/components";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import appConfig from "../config.json";
+
+import { createClient } from '@supabase/supabase-js'
+
+
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzM3NjI0OCwiZXhwIjoxOTU4OTUyMjQ4fQ.KTgIUFdPoxuwu9L5FsWn3u5Ype5E87aphhZzWvHZ0F0'
+const SUPABASE_URL = 'https://lqwyuttxbtxkrvdgungw.supabase.co'
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+
+
 
 export default function ChatPage() {
   const [mensagem, setMensagem] = useState("");
   const [listaDeMensagem, setlistaDeMensagem] = useState([]);
 
-  function onHandleKeyPress(event) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      handleNovamensagem(mensagem);
+  useEffect(() => {
+    supabaseClient
+      .from('mensagens')
+      .select('*')
+      .order('id', { ascending: false })
+      .then(({ data }) => {
+        console.log('Dados da consulta', data)
+        setlistaDeMensagem(data)
+    })
+
+  }, [])
+
+    
+    
+    
+    function onHandleKeyPress(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        handleNovamensagem(mensagem);
+      }
     }
-  }
+    
+    function handleNovamensagem(novaMensagem) {
+      const mensagem = {
+        // id: listaDeMensagem.length + 1,
+        de: 'JeshuaBen',
+        texto: novaMensagem,
+      };
 
-  function handleNovamensagem(novaMensagem) {
-    const mensagem = {
-      id: listaDeMensagem.length + 1,
-      de: 'JeshuaBen',
-      texto: novaMensagem,
-    };
-
-    setlistaDeMensagem([
-      mensagem, 
-      ...listaDeMensagem ]);
-    setMensagem("");
-  }
-
-  return (
-    <Box
+      supabaseClient
+      .from('mensagens')
+      .insert([
+        mensagem
+      ])
+      .then(({ data }) => {
+        setlistaDeMensagem([
+          data[0], 
+          ...listaDeMensagem ]);
+        })
+      
+      setMensagem("");
+    }
+    
+    return (
+      <Box
       styleSheet={{
         display: "flex",
         alignItems: "center",
@@ -51,7 +84,7 @@ export default function ChatPage() {
           height: "100%",
           maxWidth: "95%",
           maxHeight: "95vh",
-          padding: "32px",
+          padding: "28px",
         }}
       >
         <Header />
@@ -68,14 +101,6 @@ export default function ChatPage() {
           }}
         >
           <MessageList mensagens={listaDeMensagem} />
-          {/* 
-           {listaDeMensagem.map((mensagemAtual) => {
-             return(
-               <li key={mensagemAtual.id}>
-                  {mensagemAtual.de} : {mensagemAtual.texto}
-               </li>
-             )
-           })} */}
 
           <Box
             as="form"
@@ -116,7 +141,7 @@ function Header() {
       <Box
         styleSheet={{
           width: "100%",
-          marginBottom: "16px",
+          marginBottom: "30px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
@@ -174,7 +199,7 @@ function MessageList(props) {
                   display: "inline-block",
                   marginRight: "8px",
                 }}
-                src={`https://github.com/JeshuaBen.png`}
+                src={`https://github.com/${mensagem.de}.png`}
               />
               <Text tag="strong">
                 {mensagem.de}
