@@ -36,7 +36,7 @@ export default function PaginaInicial() {
       alert('Preencha o campo do usuário')
     }else  {
       event.preventDefault()
-      routes.push('/chat')
+      routes.push(`/chat?username=${username}`)
     }  
   }
 

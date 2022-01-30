@@ -25,7 +25,11 @@ function GlobalStyle() {
       #__next > * {
         flex: 1;
       }
-      /* ./App fit Height */ 
+      /* ./App fit Height */
+      
+      #stickerImg {
+        max-width: 150px;
+      }
     `}</style>
   );
 }
